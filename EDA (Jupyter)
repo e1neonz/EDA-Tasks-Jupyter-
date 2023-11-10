@@ -1,0 +1,432 @@
+# As a data scientist at Capital Bank, your task is to conduct exploratory data analysis of the churn dataset 
+# as provided in bank_churn.csv file. This dataset containing demographics and financial records of 
+# their clients, which are randomly query from their database system from three countries.
+# 
+# Description of the variables:
+# • CreditScore - Value of credit score of the client. High value indicates healthy credit score.
+# • Geography - Country where the client registered to the bank.
+# • Gender - Gender of the client, either male or female.
+# • Age - Age of the client by year.
+# • Balance - Latest balance of client's saving account.
+# • NumOfProducts - Number of products subscribe by the clients.
+# • HasCrCard - 1 mean the client own credit card of the bank and 0 mean no credit card.
+# • EstimatedSalary - Estimated yearly salary of the client.
+# • Exited - Exited status of the client after 5 years. Churn indicate clients are no longer their
+# customer, while Stay mean clients are still their customer after 5 years upon registration.
+
+# In[1]:
+
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+# In[2]:
+
+
+df = pd.read_csv('bank_churn.csv')
+df.head(5)
+
+
+# In[3]:
+
+
+df.isnull().sum()
+
+
+# In[4]:
+
+
+df.describe().round(2)
+
+
+# In[5]:
+
+
+df.columns
+
+
+# In[ ]:
+
+
+
+
+
+# 1. Check the class's proportion of Exited, Gender and Geography. Describe your findings
+
+# In[6]:
+
+
+df.describe().round(2)
+
+
+# In[7]:
+
+
+df['Exited'].value_counts()
+
+
+# In[8]:
+
+
+ax = sns.countplot(x='Exited',data=df)
+plt.show()
+
+
+# In[7]:
+
+
+df['Gender'].value_counts()
+
+
+# In[8]:
+
+
+ax = sns.countplot(x='Gender',data=df)
+plt.show()
+
+
+# In[9]:
+
+
+df['Geography'].value_counts()
+
+
+# In[10]:
+
+
+ax = sns.countplot(x='Geography',data=df)
+plt.show()
+
+
+# 2. Compute mean, median, and standard deviation of CreditScore and Age.
+
+# In[11]:
+
+
+df.describe().round(2)
+
+
+# In[14]:
+
+
+df['CreditScore'].mean()
+
+
+# In[15]:
+
+
+df['CreditScore'].median()
+
+
+# In[16]:
+
+
+df['Age'].mean()
+
+
+# In[17]:
+
+
+df['Age'].median()
+
+
+# In[18]:
+
+
+df['Age'].std()
+
+
+# In[19]:
+
+
+df['CreditScore'].std()
+
+
+# In[20]:
+
+
+import statistics as stats
+
+stats.stdev(df['CreditScore'])
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
+
+# 3. Plot the distribution of CreditScore and Age. Describe your findings
+
+# In[21]:
+
+
+df.head(10)
+
+
+# In[22]:
+
+
+plt.hist(df['Age'],bins=10)
+plt.xlabel('Age')
+plt.ylabel('Frequency')
+
+plt.show()
+
+
+# In[23]:
+
+
+#frequency is high between 30 -> 40 age
+#Frequency recorded in te dataset is skewed to the right
+
+
+# In[ ]:
+
+
+
+
+
+# In[24]:
+
+
+plt.hist(df['CreditScore'],bins=20)
+plt.xlabel('CreditScore')
+plt.ylabel('Frequency')
+
+plt.show()
+
+
+# In[25]:
+
+
+#frequency is high between 650 -> 720 credit score
+#Frequency recorded in te dataset is skewed to the left
+
+
+# In[ ]:
+
+
+
+
+
+# 4. Compute the churn rate of the clients
+
+# In[ ]:
+
+
+
+
+
+# In[26]:
+
+
+dfpie = df['Exited'].value_counts(normalize=True)*100
+dfpie
+
+
+# In[27]:
+
+
+dfpie.plot(kind='pie',autopct='%.1f%%')
+plt.show()
+
+
+# In[28]:
+
+
+20.37
+
+
+# 5. Is there any correlation between CreditScore and Age?
+
+# In[29]:
+
+
+df.corr().round(2)
+
+
+# In[30]:
+
+
+plt.figure(figsize=(5,5))
+sns.heatmap(df.corr(),annot=True,cmap='coolwarm')
+plt.show()
+
+
+# In[ ]:
+
+
+
+
+
+# In[31]:
+
+
+#Higher CreditScore, Lower the Age 
+
+
+# 6. Describe the Exited based on Geography. Compute the churn rate based on Geography
+
+# In[32]:
+
+
+df.head()
+
+
+# In[33]:
+
+
+crossTab = pd.crosstab(index=df['Geography'], columns=df['Exited'])
+
+crossTab
+
+
+# In[34]:
+
+
+crossTab = pd.crosstab(index=df['Geography'], columns=df['Exited'],normalize='index')*100
+crossTab = crossTab.round(2)
+
+crossTab
+
+
+# In[35]:
+
+
+crossTab.plot(kind='bar')
+plt.ylabel('Counts')
+plt.show()
+
+
+# In[ ]:
+
+
+
+
+
+# 7. Investigate if there is a significant different of CreditScore between Male and Female.
+
+# In[36]:
+
+
+import scipy.stats as stats
+import statistics as st
+
+crossTab = pd.crosstab(index=df['CreditScore'], columns=df['Gender'])
+
+
+crossTab
+
+
+# In[37]:
+
+
+c, p, dof, expected = stats.chi2_contingency(crossTab)
+
+p
+
+
+# In[38]:
+
+
+#Null Hypothesis
+
+
+# 8. Did the Age influence Exited status of the client?
+
+# In[39]:
+
+
+df.head(10)
+
+
+# In[40]:
+
+
+plt.scatter(df['Age'],df['Exited'])
+plt.show()
+
+
+# In[41]:
+
+
+#Higher the age, the lower the churn
+
+
+# In[42]:
+
+
+meanAge_Exited = df.groupby('Exited',as_index = False)['Age'].median()
+meanAge_Exited
+
+
+# In[43]:
+
+
+sns.boxplot(x='Exited',
+            y='Age',
+           data=df)
+plt.show()
+
+
+# In[44]:
+
+
+#Yes.
+
+
+# 9. Did the CreditScore influence the Exited status of the client?
+
+# In[45]:
+
+
+meanCreditScore_Exited = df.groupby('Exited',as_index = False)['CreditScore'].median()
+meanCreditScore_Exited
+
+
+# In[46]:
+
+
+sns.boxplot(x='Exited',
+            y='CreditScore',
+           data=df)
+plt.show()
+
+
+# In[47]:
+
+
+#No.
+
+
+# 10. Investigate if Male is likely to churn compare to Female
+
+# In[48]:
+
+
+crossTab = pd.crosstab(index=df['Exited'], columns=df['Gender'],normalize='index')*100
+crossTab = crossTab.round(2)
+
+crossTab
